@@ -88,54 +88,58 @@
 
     <!-- Add your custom JavaScript in a new script tag -->
     <script type="text/javascript">
-      const callback = (eventCallback) => {
-        // console.log({eventCallback});
+      let OTPlessSignin;
 
-        const ONETAP = () => {
-          const { response } = eventCallback;
-          const token = response.token;
-          // Implement your custom logic here.
-          console.log({
-            response,
-            token: response.token,
-          });
+      window.onload = function () {
+        const callback = (eventCallback) => {
+          // console.log({eventCallback});
+
+          const ONETAP = () => {
+            const { response } = eventCallback;
+            const token = response.token;
+            // Implement your custom logic here.
+            console.log({
+              response,
+              token: response.token,
+            });
+          };
+
+          const OTP_AUTO_READ = () => {
+            const {
+              response: { otp },
+            } = eventCallback;
+            // Auto-read OTP value
+            //console.log(otp);
+          };
+
+          const FAILED = () => {
+            const { response } = eventCallback;
+            console.log({
+              response,
+            });
+          };
+
+          const FALLBACK_TRIGGERED = () => {
+            const { response } = eventCallback;
+            console.log({
+              response,
+            });
+          };
+
+          const EVENTS_MAP = {
+            ONETAP,
+            OTP_AUTO_READ,
+            FAILED,
+            FALLBACK_TRIGGERED,
+          };
+
+          if ("responseType" in eventCallback)
+            EVENTS_MAP[eventCallback.responseType]();
         };
 
-        const OTP_AUTO_READ = () => {
-          const {
-            response: { otp },
-          } = eventCallback;
-          // Auto-read OTP value
-          //console.log(otp);
-        };
-
-        const FAILED = () => {
-          const { response } = eventCallback;
-          console.log({
-            response,
-          });
-        };
-
-        const FALLBACK_TRIGGERED = () => {
-          const { response } = eventCallback;
-          console.log({
-            response,
-          });
-        };
-
-        const EVENTS_MAP = {
-          ONETAP,
-          OTP_AUTO_READ,
-          FAILED,
-          FALLBACK_TRIGGERED,
-        };
-
-        if ("responseType" in eventCallback)
-          EVENTS_MAP[eventCallback.responseType]();
+        // Initialize OTPLESS SDK with the defined callback.
+        OTPlessSignin = new OTPless(callback);
       };
-
-      // Initialize OTPLESS SDK with the defined callback.
-      const OTPlessSignin = new OTPless(callback);
 
       function phoneAuth() {
         OTPlessSignin.initiate({
